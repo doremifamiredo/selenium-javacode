@@ -1,12 +1,13 @@
 package Pages;
 
 import Data.Data;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 
-public class LoginPage {
+public class LoginPage extends BaseSeleniumPage {
 
     @FindBy(xpath = "//*[@id='username']")
     private WebElement username;
@@ -30,7 +31,13 @@ public class LoginPage {
         username.sendKeys(user.login);
         password.sendKeys(user.password);
         button.click();
-        return new Dashboard(driver);
+        return new Dashboard();
+    }
+
+    public Dashboard authorization(String login, String pass) {
+        username.sendKeys(login);
+        password.sendKeys(pass, Keys.ENTER);
+        return new Dashboard();
     }
 
     public Dashboard authorization() {
@@ -38,7 +45,7 @@ public class LoginPage {
         username.sendKeys(user.login);
         password.sendKeys(user.password);
         button.click();
-        return new Dashboard(driver);
+        return new Dashboard();
     }
 
 }

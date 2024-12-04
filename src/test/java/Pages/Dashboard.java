@@ -8,7 +8,7 @@ import org.openqa.selenium.support.PageFactory;
 
 import java.util.List;
 
-public class Dashboard {
+public class Dashboard extends BaseSeleniumPage {
 
     @FindBy(xpath = "//*[@class='menuProfile']")
     public WebElement profile;
@@ -33,16 +33,13 @@ public class Dashboard {
     @FindBy(xpath = "//button[contains(text(), '+ Добавить')]")
     private WebElement addBtn;
 
-    @FindBy(xpath = "//*[@class='ReactModalPortal']")
-    private WebElement modalWind;
-
     @FindBy(xpath = "//*[@placeholder='Название']")
     private WebElement interviewName;
 
     @FindBy(xpath = "//*[contains(text(), 'Create')]")
     private WebElement createBtn;
 
-    public Dashboard(WebDriver driver)  {
+    public Dashboard()  {
         PageFactory.initElements(driver, this);
     }
 
@@ -52,5 +49,14 @@ public class Dashboard {
         interviewName.sendKeys(topic);
         createBtn.click();
         return this;
+    }
+    public CoursePage courseMenu() throws InterruptedException {
+        Thread.sleep(1000);
+        course.click();
+        return new CoursePage();
+    }
+
+    public String getNameUserProfile() {
+        return nameProfile.getText();
     }
 }

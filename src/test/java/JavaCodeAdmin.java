@@ -20,94 +20,70 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestMethodOrder(MethodOrderer.DisplayName.class)
 public class JavaCodeAdmin {
+    private final String adminLogin = "somov_oleg";
+    private final String adminPassword = "DY;nwmkgzpnNx9n";
+    private String idQuestion;
+    private String idModule;
 
     @org.junit.jupiter.api.Test
     @DisplayName("1. Авторизация в портале")
     void authorizationOnThePortal() {
         LoginPage loginPage = new LoginPage(driver);
-        Data.User authInfo = Data.getValidUser();
-        Dashboard dashboard = loginPage.authorization(authInfo);
-        assertAll(() -> assertEquals(authInfo.name, dashboard.profile.getText()),
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
+        assertAll(() -> assertEquals("Олег С", dashboard.getNameUserProfile()),
                 () -> assertEquals("Панель администратора", driver.getTitle()));
     }
 
     @Test
     @DisplayName("2. Добавление нового интервью")
-    void addingInterview() {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+    void addingInterview() throws InterruptedException {
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement link = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Интервью")));
-
-//        List<WebElement> root = driver.findElements(By.xpath("//div[@class='headerCont']//*/a"));
- //       root.get(2).click();
         link.click();
-       // Dashboard dashboard = new LoginPage(driver).authorization();
-        String topic = faker.word().noun();
-    //    driver.findElement(By.xpath("//div[@class='headerCont']/*//a[@href='/interviews']")).click();
-       // dashboard.addingInterview(topic);
     }
 
     @Test
     void newQuestion() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Вопросы')]")).click();
-        Thread.sleep(1000);
     }
 
     @Test
     void newQuiz() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Квизы')]")).click();
-        Thread.sleep(1000);
     }
 
     @Test
     void newModule() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Модули')]")).click();
-        Thread.sleep(1000);
     }
 
     @Test
     void newCourse() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Курсы')]")).click();
-        Thread.sleep(1000);
     }
 
     @Test
     void newUser() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Пользователи')]")).click();
-        Thread.sleep(1000);
     }
 
     @Test
     void newExam() throws InterruptedException {
-        Data.User user = Data.getValidUser();
-        driver.findElement(By.xpath("//*[@id='username']")).sendKeys(user.login);
-        driver.findElement(By.xpath("//*[@id='password']")).sendKeys(user.password);
-        driver.findElement(By.xpath("//*[@type='submit']")).click();
+        LoginPage loginPage = new LoginPage(driver);
+        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         driver.findElement(By.xpath("//a[contains(text(), 'Экзамены')]")).click();
-        Thread.sleep(1000);
     }
 
     public static WebDriver driver;
