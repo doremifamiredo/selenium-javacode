@@ -1,117 +1,91 @@
-import Data.Data;
+import Pages.BaseSeleniumTest;
 import Pages.Dashboard;
 import Pages.LoginPage;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import Pages.UserGenerator;
+import net.datafaker.Faker;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Locale;
 
-import static Data.Data.faker;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestMethodOrder(MethodOrderer.DisplayName.class)
-public class JavaCodeAdmin {
+
+public class JavaCodeAdmin extends BaseSeleniumTest {
     private final String adminLogin = "somov_oleg";
     private final String adminPassword = "DY;nwmkgzpnNx9n";
-    private String idQuestion;
-    private String idModule;
+    private static final Faker faker = new Faker(new Locale("ru"));
+    private String expected;
 
-    @org.junit.jupiter.api.Test
-    @DisplayName("1. Авторизация в портале")
-    void authorizationOnThePortal() {
-        LoginPage loginPage = new LoginPage(driver);
+    @BeforeEach
+    void login() {
+        LoginPage loginPage = new LoginPage();
         Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
         assertAll(() -> assertEquals("Олег С", dashboard.getNameUserProfile()),
                 () -> assertEquals("Панель администратора", driver.getTitle()));
+        expected = faker.word().noun();
     }
 
     @Test
     @DisplayName("2. Добавление нового интервью")
     void addingInterview() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Интервью")));
-        link.click();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Интервью").addInterview(expected);
+        assertEquals(expected, dashboard.firstBox.getText());
     }
 
     @Test
+    @DisplayName("3. добавление нового вопроса")
     void newQuestion() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Вопросы')]")).click();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Вопросы").addNote(expected);
+        assertEquals(expected, dashboard.firstDiv.getText());
     }
 
     @Test
+    @DisplayName("4. создание квиза")
     void newQuiz() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Квизы')]")).click();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Квизы").addNote(expected);
+        assertEquals(expected, dashboard.firstBox.getText());
     }
 
     @Test
+    @DisplayName("5. создание нового модуля")
     void newModule() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Модули')]")).click();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Модули").addModule(expected);
+        assertEquals(expected, dashboard.firstBox.getText());
     }
 
     @Test
+    @DisplayName("6. создание нового курса")
     void newCourse() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Курсы')]")).click();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Курсы").addCourse(expected);
+        assertEquals(expected, dashboard.firstBox.getText());
+    }
+
+    @ParameterizedTest
+    @MethodSource("Pages.UserGenerator#dataFakerStream")
+    @DisplayName("7. создание нового пользователя")
+    void newUser(HashMap<String, String> user) throws InterruptedException {
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Пользователи").addUser(user);
+        assertAll(() -> assertEquals(user.get("Логин"), dashboard.login.getText(), "Логины не совпадают"),
+                () -> assertEquals(user.get("Имя"), dashboard.name.getText(), "Имя не совпадает"),
+                () -> assertEquals(user.get("Фамилия"), dashboard.lastName.getText(), "Фамилия не совпадает"));
     }
 
     @Test
-    void newUser() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Пользователи')]")).click();
-    }
-
-    @Test
+    @DisplayName("10. создание нового экзамена")
     void newExam() throws InterruptedException {
-        LoginPage loginPage = new LoginPage(driver);
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
-        driver.findElement(By.xpath("//a[contains(text(), 'Экзамены')]")).click();
-    }
-
-    public static WebDriver driver;
-
-    @BeforeAll
-    static void setup() {
-        WebDriverManager.chromedriver().setup();
-    }
-
-    @BeforeEach
-    void openSite() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--no-sandbox");
-        //   options.addArguments("--headless");
-        driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.get("https://aqa-admin.javacode.ru/login");
-        driver.manage().window().maximize();
-    }
-
-    @AfterEach
-    void closing() {
-        driver.close();
-    }
-
-    @AfterAll
-    static void teardown() {
-        driver.quit();
+        Dashboard dashboard = new Dashboard();
+        dashboard.menu("Экзамены").addModule(expected);
+        assertEquals(expected, dashboard.firstBox.getText());
     }
 }

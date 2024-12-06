@@ -1,62 +1,47 @@
 package Pages;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
+import java.time.Duration;
 
 public class Dashboard extends BaseSeleniumPage {
+
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
     @FindBy(xpath = "//*[@class='menuProfile']")
     public WebElement profile;
 
-    @FindBy(xpath = "//a[contains(text(), 'Курсы')]")
-    private WebElement course;
-    @FindBy(xpath = "//a[contains(text(), 'Экзамены')]")
-    private WebElement exam;
-    @FindBy(xpath = "//a[contains(text(), 'Интервью')]")
-    private WebElement interview;
-    @FindBy(xpath = "//a[contains(text(), 'Модули')]")
-    private WebElement module;
-    @FindBy(xpath = "//a[contains(text(), 'Вопросы')]")
-    private WebElement question;
-    @FindBy(xpath = "//a[contains(text(), 'Квизы')]")
-    private WebElement quiz;
-    @FindBy(xpath = "//a[contains(text(), 'Пользователи')]")
-    private WebElement users;
+    @FindBy(xpath = "//tr/td/span[1]")
+    public WebElement firstBox;
+    @FindBy(xpath = "//thead/following::div[1]")
+    public WebElement firstDiv;
+
+    @FindBy(xpath = "//tbody/tr/td[2]")
+    public WebElement login;
+    @FindBy(xpath = "//tbody/tr/td[3]")
+    public WebElement name;
+    @FindBy(xpath = "//tbody/tr/td[4]")
+    public WebElement lastName;
+
     @FindBy(xpath = "//div[@class='menuProfile']")
     private WebElement nameProfile;
-
-    @FindBy(xpath = "//button[contains(text(), '+ Добавить')]")
-    private WebElement addBtn;
-
-    @FindBy(xpath = "//*[@placeholder='Название']")
-    private WebElement interviewName;
-
-    @FindBy(xpath = "//*[contains(text(), 'Create')]")
-    private WebElement createBtn;
 
     public Dashboard()  {
         PageFactory.initElements(driver, this);
     }
 
-    public Dashboard addingInterview(String topic) {
-        interview.click();
-        addBtn.click();
-        interviewName.sendKeys(topic);
-        createBtn.click();
-        return this;
-    }
-    public CoursePage courseMenu() throws InterruptedException {
+    public CreationPage menu(String link) throws InterruptedException {
         Thread.sleep(1000);
-        course.click();
-        return new CoursePage();
+        driver.findElement(By.linkText(link)).click();
+        return new CreationPage();
     }
 
     public String getNameUserProfile() {
         return nameProfile.getText();
     }
+
 }
