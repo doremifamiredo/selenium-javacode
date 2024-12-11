@@ -1,30 +1,28 @@
 import Pages.BaseSeleniumTest;
 import Pages.Dashboard;
 import Pages.LoginPage;
-import Pages.UserGenerator;
 import net.datafaker.Faker;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openqa.selenium.By;
 
 import java.util.HashMap;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class JavaCodeAdmin extends BaseSeleniumTest {
-    private final String adminLogin = "somov_oleg";
-    private final String adminPassword = "DY;nwmkgzpnNx9n";
+
     private static final Faker faker = new Faker(new Locale("ru"));
     private String expected;
 
     @BeforeEach
     void login() {
         LoginPage loginPage = new LoginPage();
-        Dashboard dashboard = loginPage.authorization(adminLogin, adminPassword);
+        Dashboard dashboard = loginPage.authorizationAdmin();
         assertAll(() -> assertEquals("Олег С", dashboard.getNameUserProfile()),
                 () -> assertEquals("Панель администратора", driver.getTitle()));
         expected = faker.word().noun();
@@ -71,7 +69,7 @@ public class JavaCodeAdmin extends BaseSeleniumTest {
     }
 
     @ParameterizedTest
-    @MethodSource("Pages.UserGenerator#dataFakerStream")
+    @MethodSource("Pages.Generator#userInfo")
     @DisplayName("7. создание нового пользователя")
     void newUser(HashMap<String, String> user) throws InterruptedException {
         Dashboard dashboard = new Dashboard();
@@ -79,6 +77,15 @@ public class JavaCodeAdmin extends BaseSeleniumTest {
         assertAll(() -> assertEquals(user.get("Логин"), dashboard.login.getText(), "Логины не совпадают"),
                 () -> assertEquals(user.get("Имя"), dashboard.name.getText(), "Имя не совпадает"),
                 () -> assertEquals(user.get("Фамилия"), dashboard.lastName.getText(), "Фамилия не совпадает"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("Pages.Generator#interviewInfo")
+    @DisplayName("9. редактирование интервью")
+    void editingInterview(HashMap<String, String> interview) throws InterruptedException {
+        Dashboard dashboard = new Dashboard();
+        String actual = dashboard.menu("Интервью").editingInterview(interview);
+        assertTrue(interview.containsValue(actual));
     }
 
     @Test
